@@ -3,7 +3,7 @@ from langgraph.graph import StateGraph, END
 from typing import TypedDict, Annotated, Sequence
 import operator
 from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage
-from langchain.callbacks.streaming_stdout import AsyncCaller # Импортируем AsyncCaller
+from langchain.callbacks.base import AsyncCaller # Импортируем AsyncCaller
 
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
