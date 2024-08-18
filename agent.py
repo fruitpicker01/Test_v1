@@ -11,21 +11,24 @@ model = GigaChat(
     streaming=True,  # Включение потоковой передачи данных
 )
 
-# Формируем правильный формат сообщений
-messages = [
-    SystemMessage(content="Ты помощник AI, который помогает пользователям."),
-    HumanMessage(content="Какая сегодня погода?")
-]
-
-def handle_messages(state):
+def generate_response(messages):
     # Отправляем запрос к модели GigaChat и получаем ответ
     response = model.invoke(messages)
-    return {"messages": [response]}
+    return response.content
 
 # Создаем агента с моделью GigaChat-Pro
 graph = create_react_agent(model, tools=[])
 
-# Подключаем управление к графу до его компиляции
+# Определяем, как агент будет обрабатывать сообщения
+def handle_messages(state):
+    messages = [
+        SystemMessage(content="Ты помощник AI, который помогает пользователям."),
+        HumanMessage(content="Какая сегодня погода?")
+    ]
+    response_content = generate_response(messages)
+    return {"messages": [response_content]}
+
+# Добавляем узел и ребро к графу
 graph.add_node("handle_messages", handle_messages)
 graph.add_edge("start", "handle_messages")
 
