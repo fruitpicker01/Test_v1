@@ -28,8 +28,10 @@ def should_continue(state):
 # Определение функции вызова модели (ИСПРАВЛЕНО)
 def call_model(state):
     messages = state['messages']
-    response = model.stream(messages) # Используйте model.stream вместо model.invoke
-    return {"messages": [response]}
+    response = model.stream(messages)
+    # Преобразуем генератор в список сообщений
+    message_list = [message for message in response] 
+    return {"messages": message_list}
 
 # Добавляем системное сообщение для первого агента
 def handle_product(state):
