@@ -1,23 +1,14 @@
 from langchain_community.chat_models.gigachat import GigaChat
-from langchain.schema import SystemMessage, HumanMessage
+from langgraph.prebuilt import create_react_agent
 
-# Устанавливаем модель GigaChat-Pro с правильными параметрами
+# Setup the GigaChat model
 model = GigaChat(
     credentials="ZDRkMGFhNmQtN2NjYS00NDMxLWIxNTAtZTc5NDJhZmM1NThiOjYyODE4MWJmLTM5ZjAtNGI4MC05NWU3LWFhYWY4NjRlYmU0YQ==",
     scope="GIGACHAT_API_PERS",
     model="GigaChat-Pro",
     verify_ssl_certs=False,
-    streaming=True,  # Включение потоковой передачи данных
+    streaming=True,
 )
 
-# Формируем правильный формат сообщений
-messages = [
-    SystemMessage(content="Ты помощник AI, который помогает пользователям."),
-    HumanMessage(content="Какая сегодня погода?")
-]
-
-# Отправляем запрос к модели GigaChat и получаем ответ
-response = model.invoke(messages)
-
-# Выводим ответ модели
-print("Ответ от GigaChat:", response.content)
+# Define an empty agent graph for now
+graph = create_react_agent(model, tools=[])
