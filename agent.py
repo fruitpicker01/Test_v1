@@ -3,9 +3,12 @@ from langgraph.graph import StateGraph, END
 from typing import TypedDict, Annotated, Sequence
 import operator
 import json
-from langchain_core.messages import BaseMessage, FunctionMessage, SystemMessage, HumanMessage
+from langchain_core.messages import BaseMessage, FunctionMessage, HumanMessage
 
-class AgentState(TypedDict):
+class ProductState(TypedDict):
+    messages: Annotated[Sequence[BaseMessage], operator.add]
+
+class CustomerState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
 
 model = GigaChat(
@@ -24,48 +27,42 @@ def should_continue(state):
     else:
         return "continue"
 
-def call_model(state):
+def handle_product(state):
     messages = state['messages']
     response = model.invoke(messages)
     return {"messages": [response]}
 
-def call_tool(state):
+def handle_customer(state):
     messages = state['messages']
-    last_message = messages[-1]
-    action = ToolInvocation(
-        tool=last_message.additional_kwargs["function_call"]["name"],
-        tool_input=json.loads(last_message.additional_kwargs["function_call"]["arguments"]),
-    )
-    response = tool_executor.invoke(action)
-    function_message = FunctionMessage(content=str(response), name=action.tool)
-    return {"messages": [function_message]}
+    response = model.invoke(messages)
+    return {"messages": [response]}
 
-# Создаем первый граф для product_agent
-product_workflow = StateGraph(AgentState)
-product_workflow.add_node("product_agent", call_model)
+# Создание графа для продукта
+product_workflow = StateGraph(ProductState)
+product_workflow.add_node("product_agent", handle_product)
 product_workflow.set_entry_point("product_agent")
 product_workflow.add_conditional_edges(
     "product_agent",
     should_continue,
     {
-        "continue": "action",
-        "end": END  # Используем зарезервированную вершину END
+        "continue": "product_agent",
+        "end": END
     }
 )
 
-# Создаем второй граф для customer_agent
-customer_workflow = StateGraph(AgentState)
+product_app = product_workflow.compile()
+
+# Создание графа для клиента
+customer_workflow = StateGraph(CustomerState)
 customer_workflow.add_node("customer_agent", handle_customer)
 customer_workflow.set_entry_point("customer_agent")
 customer_workflow.add_conditional_edges(
     "customer_agent",
     should_continue,
     {
-        "continue": "action",
-        "end": END  # Используем зарезервированную вершину END
+        "continue": "customer_agent",
+        "end": END
     }
 )
 
-# Компилируем оба графа
-product_app = product_workflow.compile()
 customer_app = customer_workflow.compile()
