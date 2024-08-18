@@ -13,7 +13,7 @@ model = GigaChat(
     scope="GIGACHAT_API_PERS",
     model="GigaChat-Pro",
     verify_ssl_certs=False,
-    streaming=True,
+    streaming=False,
 )
 
 def should_continue(state):
