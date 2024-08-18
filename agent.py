@@ -1,6 +1,7 @@
+from typing import Literal, TypedDict
+from langchain_core.messages import SystemMessage, HumanMessage, BaseMessage
 from langchain_community.chat_models.gigachat import GigaChat
-from langgraph.prebuilt import create_react_agent
-from langchain.schema import SystemMessage, HumanMessage
+from langgraph.graph import StateGraph, END
 
 # Устанавливаем модель GigaChat-Pro с правильными параметрами
 model = GigaChat(
@@ -11,26 +12,35 @@ model = GigaChat(
     streaming=True,  # Включение потоковой передачи данных
 )
 
-def generate_response(messages):
-    # Отправляем запрос к модели GigaChat и получаем ответ
+# Определение состояния агента
+class AgentState(TypedDict):
+    messages: list[BaseMessage]
+
+# Функция для вызова модели
+def call_model(state: AgentState) -> dict:
+    messages = state["messages"]
     response = model.invoke(messages)
-    return response.content
+    return {"messages": [response]}
 
-# Создаем агента с моделью GigaChat-Pro
-graph = create_react_agent(model, tools=[])
+# Функция, определяющая продолжение работы
+def should_continue(state: AgentState) -> Literal["agent", END]:
+    messages = state["messages"]
+    last_message = messages[-1]
+    if last_message.tool_calls:  # Если модель сделала вызов инструмента
+        return "agent"  # Продолжаем выполнение
+    return END  # Завершаем выполнение
 
-# Определяем, как агент будет обрабатывать сообщения
-def handle_messages(state):
-    messages = [
-        SystemMessage(content="Ты помощник AI, который помогает пользователям."),
-        HumanMessage(content="Какая сегодня погода?")
-    ]
-    response_content = generate_response(messages)
-    return {"messages": [response_content]}
+# Создание графа состояния
+workflow = StateGraph(AgentState)
 
-# Добавляем узел и ребро к графу
-graph.add_node("handle_messages", handle_messages)
-graph.add_edge("start", "handle_messages")
+# Добавляем узлы
+workflow.add_node("agent", call_model)
 
-# Компилируем граф
-compiled_graph = graph.compile()
+# Устанавливаем начальную точку
+workflow.set_entry_point("agent")
+
+# Добавляем условный переход
+workflow.add_conditional_edges("agent", should_continue)
+
+# Компиляция графа
+compiled_graph = workflow.compile()
