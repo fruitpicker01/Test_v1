@@ -1,5 +1,4 @@
-langchain
-langchain_openai
-langchain_community
-openai
 langgraph
+langchain_anthropic
+tavily-python
+langchain_community
