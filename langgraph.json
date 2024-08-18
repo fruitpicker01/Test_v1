@@ -1,8 +1,8 @@
 {
   "dependencies": ["."],
   "graphs": {
-    "product_agent": "./agent.py:product_app",
-    "customer_agent": "./agent.py:customer_app"
+    "product_agent": "./agent.py:app",
+    "customer_agent": "./agent.py:app"
   },
   "env": ".env"
 }
