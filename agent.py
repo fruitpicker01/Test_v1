@@ -11,16 +11,21 @@ model = GigaChat(
     streaming=True,  # Включение потоковой передачи данных
 )
 
-# Создаем агента с моделью GigaChat-Pro и без инструментов
-graph = create_react_agent(model, tools=[])
+# Формируем правильный формат сообщений
+messages = [
+    SystemMessage(content="Ты помощник AI, который помогает пользователям."),
+    HumanMessage(content="Какая сегодня погода?")
+]
 
-# Включаем управление потоками сообщений в графе
 def handle_messages(state):
-    messages = state.get("messages", [])
+    # Отправляем запрос к модели GigaChat и получаем ответ
     response = model.invoke(messages)
     return {"messages": [response]}
 
-# Подключаем управление к графу
+# Создаем агента с моделью GigaChat-Pro
+graph = create_react_agent(model, tools=[])
+
+# Подключаем управление к графу до его компиляции
 graph.add_node("handle_messages", handle_messages)
 graph.add_edge("start", "handle_messages")
 
