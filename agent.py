@@ -9,7 +9,7 @@ model = GigaChat(
     scope="GIGACHAT_API_PERS",
     model="GigaChat-Pro",
     verify_ssl_certs=False,
-    streaming=True,  # Включение потоковой передачи данных
+    streaming=False,
 )
 
 # Определение состояния агента
