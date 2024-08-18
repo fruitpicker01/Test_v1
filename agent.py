@@ -1,22 +1,23 @@
-from langchain.chat_models.gigachat import GigaChat
+from langchain_community.chat_models.gigachat import GigaChat
+from langchain.schema import SystemMessage, HumanMessage
 
-# Установите параметры для модели GigaChat-Pro
+# Устанавливаем модель GigaChat-Pro с правильными параметрами
 model = GigaChat(
     credentials="ZDRkMGFhNmQtN2NjYS00NDMxLWIxNTAtZTc5NDJhZmM1NThiOjYyODE4MWJmLTM5ZjAtNGI4MC05NWU3LWFhYWY4NjRlYmU0YQ==",
     scope="GIGACHAT_API_PERS",
     model="GigaChat-Pro",
     verify_ssl_certs=False,
-    streaming=True,  # Включает потоковую передачу токенов
+    streaming=True,  # Включение потоковой передачи данных
 )
 
-# Определяем сообщения, которые будут отправлены модели
+# Формируем правильный формат сообщений
 messages = [
-    {"role": "system", "content": "Ты ассистент AI, помогаешь пользователям."},
-    {"role": "user", "content": "Расскажи мне про GigaChat."},
+    SystemMessage(content="Ты помощник AI, который помогает пользователям."),
+    HumanMessage(content="Какая сегодня погода?")
 ]
 
-# Отправляем запрос к модели GigaChat
-response = model(messages)
+# Отправляем запрос к модели GigaChat и получаем ответ
+response = model.invoke(messages)
 
 # Выводим ответ модели
-print("Ответ от GigaChat:", response)
+print("Ответ от GigaChat:", response.content)
