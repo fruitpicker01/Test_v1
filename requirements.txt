@@ -1,3 +1,2 @@
-langchain
+langgraph
 openai
-langchain_community
