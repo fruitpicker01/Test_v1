@@ -1,15 +1,9 @@
-from langchain.chat_models import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
+from langchain_community.tools.tavily_search import TavilySearchResults
 from langgraph.prebuilt import create_react_agent
 
-# Загрузка ключа API из переменной окружения
-import os
-openai_api_key = os.getenv('OPENAI_API_KEY')
+model = ChatAnthropic(model="claude-3-5-sonnet-20240620")
 
-# Настройка модели GPT-4o
-model = ChatOpenAI(openai_api_key=openai_api_key, model="gpt-4o")
+tools = [TavilySearchResults(max_results=2)]
 
-# Создание простого агента с использованием prebuilt функции
-graph = create_react_agent(model)
-
-if __name__ == "__main__":
-    print("Граф агента успешно создан.")
+graph = create_react_agent(model, tools)
