@@ -1,6 +1,6 @@
+import os
 import openai
 from langchain.chat_models import ChatOpenAI
-from langchain.schema import HumanMessage
 
 # Загрузка ключа API из переменной окружения
 openai.api_key = os.getenv('GPT_KEY')
