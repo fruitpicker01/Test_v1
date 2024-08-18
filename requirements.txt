@@ -1,6 +1,8 @@
 langgraph
 langchain
 langchain_community
+langchain-community
 gigachat
+gigachain_community
 gigachain-community
 gigagraph
