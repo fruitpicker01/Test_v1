@@ -1,16 +1,15 @@
-import os
-import openai
 from langchain.chat_models import ChatOpenAI
+from langgraph.prebuilt import create_react_agent
 
 # Загрузка ключа API из переменной окружения
-openai.api_key = os.getenv('GPT_KEY')
+import os
+openai_api_key = os.getenv('GPT_KEY')
 
 # Настройка модели GPT-4o
-def run_agent():
-    model = ChatOpenAI(model="gpt-4o")
-    prompt = "Привет! Как я могу помочь?"
-    response = model([HumanMessage(content=prompt)])
-    print(response[0].content)
+model = ChatOpenAI(openai_api_key=openai_api_key, model="gpt-4o")
+
+# Создание простого агента с использованием prebuilt функции
+graph = create_react_agent(model)
 
 if __name__ == "__main__":
-    run_agent()
+    print("Граф агента успешно создан.")
