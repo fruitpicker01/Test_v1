@@ -1,9 +1,9 @@
 from langchain_community.chat_models.gigachat import GigaChat
-from langchain_core.messages import FunctionMessage, SystemMessage, HumanMessage
 from langgraph.graph import StateGraph, END
 from typing import TypedDict, Annotated, Sequence
 import operator
 import json
+from langchain_core.messages import BaseMessage, FunctionMessage, SystemMessage, HumanMessage
 
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
