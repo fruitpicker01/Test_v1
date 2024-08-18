@@ -30,6 +30,8 @@ def should_continue(state):
 def call_model(state):
     messages = state['messages']
     response = model.invoke(messages)
+    if response.error:
+        raise ValueError("Ошибка вызова модели: " + response.error)
     return {"messages": [response]}
 
 # Добавляем системное сообщение для первого агента
