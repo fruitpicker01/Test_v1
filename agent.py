@@ -3,7 +3,7 @@ from langgraph.prebuilt import create_react_agent
 
 # Загрузка ключа API из переменной окружения
 import os
-openai_api_key = os.getenv('GPT_KEY')
+openai_api_key = os.getenv('OPENAI_API_KEY')
 
 # Настройка модели GPT-4o
 model = ChatOpenAI(openai_api_key=openai_api_key, model="gpt-4o")
