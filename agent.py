@@ -1,11 +1,7 @@
-from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
+from langchain_community.chat_models import GigaChat
 
-# Используем модель GPT-4o
-model = ChatOpenAI(model="gpt-4o", temperature=0)
+model = GigaChat(verify_ssl_certs=False, scope="GIGACHAT_API_PERS")
 
-# Оставляем пустой список инструментов, так как Tavily убрали
-tools = []
+tools = []  # Список инструментов, если нужно
 
-# Создаем агент с моделью GPT-4o и без инструментов
 graph = create_react_agent(model, tools)
