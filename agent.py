@@ -32,47 +32,31 @@ def call_model(state):
     response = model.invoke(messages)
     return {"messages": [response]}
 
-# Агент для генерации рекламного сообщения о продукте
+# Добавляем системное сообщение для первого агента
 def handle_product(state):
     system_message = SystemMessage(content="Ты являешься маркетологом. Твоя задача - создать рекламное SMS-сообщение на основе введенной информации о продукте.")
     state['messages'].append(system_message)
     return call_model(state)
 
-# Агент для генерации персонализированного сообщения на основе информации о клиенте
+# Добавляем системное сообщение для второго агента
 def handle_customer(state):
-    system_message = SystemMessage(content="Ты маркетолог, создающий персонализированное рекламное SMS-сообщение на основе информации о клиенте.")
+    system_message = SystemMessage(content="Ты являешься специалистом по персонализации. На основе информации о клиенте ты должен адаптировать SMS-сообщение.")
     state['messages'].append(system_message)
     return call_model(state)
 
-# Создание графа для первого агента
-product_workflow = StateGraph(AgentState)
+# Создание графа работы агентов
+workflow = StateGraph(AgentState)
 
-# Добавляем узлы в граф первого агента
-product_workflow.add_node("product_agent", handle_product)
-product_workflow.set_entry_point("product_agent")
+# Добавляем узлы в граф
+workflow.add_node("product_agent", handle_product)
+workflow.add_node("customer_agent", handle_customer)
 
-# Задаем условное ребро для продолжения работы первого агента
-product_workflow.add_conditional_edges(
-    "product_agent",
-    should_continue,
-    {
-        "continue": "product_agent",
-        "end": END
-    }
-)
+# Задаем последовательность работы агентов
+workflow.set_entry_point("product_agent")
+workflow.add_edge("product_agent", "customer_agent")
 
-# Компиляция графа первого агента
-product_app = product_workflow.compile()
-
-# Создание графа для второго агента
-customer_workflow = StateGraph(AgentState)
-
-# Добавляем узлы в граф второго агента
-customer_workflow.add_node("customer_agent", handle_customer)
-customer_workflow.set_entry_point("customer_agent")
-
-# Задаем условное ребро для продолжения работы второго агента
-customer_workflow.add_conditional_edges(
+# Задаем условное ребро для продолжения работы
+workflow.add_conditional_edges(
     "customer_agent",
     should_continue,
     {
@@ -81,5 +65,5 @@ customer_workflow.add_conditional_edges(
     }
 )
 
-# Компиляция графа второго агента
-customer_app = customer_workflow.compile()
+# Компиляция графа
+app = workflow.compile()
