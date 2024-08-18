@@ -1,9 +1,11 @@
-from langchain_anthropic import ChatAnthropic
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 
-model = ChatAnthropic(model="claude-3-5-sonnet-20240620")
+# Используем модель GPT-4o
+model = ChatOpenAI(model="gpt-4o", temperature=0)
 
-tools = [TavilySearchResults(max_results=2)]
+# Оставляем пустой список инструментов, так как Tavily убрали
+tools = []
 
+# Создаем агент с моделью GPT-4o и без инструментов
 graph = create_react_agent(model, tools)
