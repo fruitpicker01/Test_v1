@@ -3,7 +3,6 @@ from langgraph.graph import StateGraph, END
 from typing import TypedDict, Annotated, Sequence
 import operator
 from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage
-from langchain.callbacks.base import AsyncCaller # Импортируем AsyncCaller
 
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
@@ -14,11 +13,8 @@ model = GigaChat(
     scope="GIGACHAT_API_PERS",
     model="GigaChat-Pro",
     verify_ssl_certs=False,
-    streaming=True,
+    streaming=False  # Отключаем стриминг
 )
-
-# Создаем экземпляр AsyncCaller
-async_caller = AsyncCaller(model.stream)
 
 # Определение логики продолжения работы агента
 def should_continue(state):
@@ -29,10 +25,10 @@ def should_continue(state):
     else:
         return "continue"
 
-# Определение функции вызова модели (ИСПРАВЛЕНО)
+# Определение функции вызова модели
 def call_model(state):
     messages = state['messages']
-    response = async_caller(messages) # Используем async_caller для вызова model.stream
+    response = model.invoke(messages)  # Используем invoke вместо stream
     return {"messages": [response]}
 
 # Добавляем системное сообщение для первого агента
