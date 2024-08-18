@@ -2,8 +2,7 @@ from langchain_community.chat_models.gigachat import GigaChat
 from langgraph.graph import StateGraph, END
 from typing import TypedDict, Annotated, Sequence
 import operator
-import json
-from langchain_core.messages import BaseMessage, FunctionMessage, SystemMessage, HumanMessage
+from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage
 
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
@@ -30,8 +29,6 @@ def should_continue(state):
 def call_model(state):
     messages = state['messages']
     response = model.invoke(messages)
-    if response.error:
-        raise ValueError("Ошибка вызова модели: " + response.error)
     return {"messages": [response]}
 
 # Добавляем системное сообщение для первого агента
