@@ -1,13 +1,22 @@
 from langchain.chat_models.gigachat import GigaChat
-from langgraph.prebuilt import create_react_agent
 
-# Используем модель GigaChat-Pro с соответствующими ключами
-model = GigaChat(credentials="ZDRkMGFhNmQtN2NjYS00NDMxLWIxNTAtZTc5NDJhZmM1NThiOjYyODE4MWJmLTM5ZjAtNGI4MC05NWU3LWFhYWY4NjRlYmU0YQ==", 
-                 model="GigaChat-Pro", 
-                 verify_ssl_certs=False)
+# Установите параметры для модели GigaChat-Pro
+model = GigaChat(
+    credentials="ZDRkMGFhNmQtN2NjYS00NDMxLWIxNTAtZTc5NDJhZmM1NThiOjYyODE4MWJmLTM5ZjAtNGI4MC05NWU3LWFhYWY4NjRlYmU0YQ==",
+    scope="GIGACHAT_API_PERS",
+    model="GigaChat-Pro",
+    verify_ssl_certs=False,
+    streaming=True,  # Включает потоковую передачу токенов
+)
 
-# Пока оставляем инструменты пустыми
-tools = []
+# Определяем сообщения, которые будут отправлены модели
+messages = [
+    {"role": "system", "content": "Ты ассистент AI, помогаешь пользователям."},
+    {"role": "user", "content": "Расскажи мне про GigaChat."},
+]
 
-# Создаем агента с моделью GigaChat-Pro и без инструментов
-graph = create_react_agent(model, tools)
+# Отправляем запрос к модели GigaChat
+response = model(messages)
+
+# Выводим ответ модели
+print("Ответ от GigaChat:", response)
