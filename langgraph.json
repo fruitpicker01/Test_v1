@@ -1,5 +1,12 @@
 {
   "entry_point": "agent.py",
   "language": "python",
-  "dependencies": ["langchain", "openai"]
+  "dependencies": ["langchain", "openai"],
+  "graphs": {
+    "default": {
+      "type": "chatbot",
+      "inputs": ["input"],
+      "outputs": ["output"]
+    }
+  }
 }
